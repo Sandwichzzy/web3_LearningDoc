@@ -490,4 +490,4 @@ function settle(uint256 _pid) public validCall{
 
 ### 状态管理流程图
 
-![flowmap](G:\区块链\MetaNode\Project\resume_project\Pledge\img\poolStateflow.png)
+![poolStateflow](imgs\poolStateflow.png)
