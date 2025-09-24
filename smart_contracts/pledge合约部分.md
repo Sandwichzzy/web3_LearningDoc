@@ -490,4 +490,4 @@ function settle(uint256 _pid) public validCall{
 
 ### 状态管理流程图
 
-![poolStateflow](imgs\poolStateflow.png)
+![poolStateflow](imgs/poolStateflow.png)
