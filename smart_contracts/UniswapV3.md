@@ -32,7 +32,7 @@ Uniswap 到目前已经迭代了好几个版本，下面是各个版本的发展
 
 [UniswapV3白皮书](https://github.com/adshao/publications/blob/master/uniswap/dive-into-uniswap-v3-whitepaper/README_zh.md)
 
-![uniswapV3](img/uniswapV3_stru)*uniswapV3*
+![uniswapV3](imgs/uniswapV3_stru)*uniswapV3*
 
 - Uniswap v3-periphery
 
