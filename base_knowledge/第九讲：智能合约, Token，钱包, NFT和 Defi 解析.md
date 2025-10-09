@@ -33,7 +33,7 @@
 
 Ethereum 链上代币是 ETH， 不管是 Bitcoin 的 BTC 还是 Ethereum 的 ETH 都叫做 Native Token(主链代币)
 
-与 Native Token，其实就是非主链币，非主链币每一条链的叫法不太一样
+除了Native Token，其实就是非主链币，非主链币每一条链的叫法不太一样
 
 - Ethereum 非 ETH 代币（同质化代币）
   - ERC20 代币:  同质化代币（可以拆分的币);  例如 USDT, UNI, USDC 和 DAI 等代币
