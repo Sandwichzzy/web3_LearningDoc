@@ -1,0 +1,75 @@
+- Solidity 智能合约初体验与工具介绍
+  - 合约简介
+  - 合约文件结构
+  - 合约的定义
+  - RPC 节点
+  - Remix 使用初体验
+  - HardHat 使用介绍
+  - Foundry 使用介绍
+  - 合约，合约 ABI 和 CallData 的关系
+- 合约基础语法
+  - 数据类型
+  - 循环分之
+  - 合约函数
+  - 合约事件
+  - 抽象合约与接口
+  - 异常处理
+  - 变量作用域和数据存储 
+  - Solidity 内存布局 
+- 合约的进阶
+  - call, delegatecall, staticcall 和 multicall 基本使用
+  - 跨合约的调用方式
+  - 常见的address(this)，tx.origin 和 msg.sender 语句解释
+  - 函数选择器
+  - create2 底层原理与实现机制
+  - 合约删除(合约自毁)
+  - Solidity 内联汇编
+  - 合约的 lib 库 
+  - OZ 代码库讲解 
+  - 基于 OZ 发行第一个 ERC20 代币
+- 合约的升级方式
+  - 不可以升级的合约如何进行合约升级
+  - 透明代理升级
+  - UUPS 升级
+  - 钻石代理
+  - 信标代理
+- 重要的 EIP 协议讲解
+  - ERC20
+  - ERC721 与 ERC1155
+  - EIP1559
+  - EIP-1167-最小代理 clone
+  - EIP2930
+  - EIP3643
+  - EIP4337
+  - EIP4844
+  - EIP7702
+- **合约事件监听器实战**
+  - TheGraph 监听合约事件
+  - 原生 NodeJs 监听合约
+  - 使用 Go 监听合约事件（Go 语法自学）
+- **第一个项目实战：EventFI 项目实战**
+  - NFT 身份认证
+  - 活动挖矿
+  - FCC 代币经济模型
+  - FCC 质押协议
+- **第二项目实战：NFT 的交易平台**
+  - NFT mint 和 burn
+  - NFT 门票
+  - NFT 盲盒
+  - NFT collection, List 
+  - NFT 交易
+  - NFT 核销
+- **第三个项目实战：跨链桥项目（cpchain,  roothash chain）**
+  - 任意 EVM 链到任意 EVM 链的资产跨链
+- **第四个项目实战：预言机的项目（实际线上项目）**
+  - Price Fee
+  - VRF 
+  - Event Oracle 
+  - RWA 价格平衡机
+- **第五个项目：LSP 项目源码解读, meth 合约源码解读**
+- **第六个项目：EigenLayer 源码解读**
+- **第七阶段：核心 DeFi 原理与代码解读**
+  - **Uniswap V1-V3**
+  - **Compound V2**
+- **第八阶段：合约安全审计**
+- **第九阶段：MEV 的原理与实战案例**
