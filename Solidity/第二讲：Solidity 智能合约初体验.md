@@ -230,3 +230,112 @@ contract xxx {
 - 代码块可以包含上面合约文件结构里面的任意结构
 
 # 五.合约的运行之---Remix 使用初体验
+
+真正的一个项目一般都是不会使用 Remix, 学习时候使用的小工具，提供丰富界面操作，但是功能并没有 foundry 和 hardhat 这样工具强大；实际中 hardhat 和 foundy 更使用大项目项目的管理。
+
+使用 Remix 部署合约到 RootHash Chain, 下面是 RootHashChain 的网络信息
+
+- 测试网 RPC 与浏览器
+  - https://rpc-testnet.roothashpay.com
+  - https://wss-testnet.roothashpay.com
+  - https://explorer-testnet.roothashpay.com
+
+- 主网 RPC 与浏览器
+  - https://rpc.roothashpay.com
+  - https://wss.roothashpay.com
+  - https://explorer.roothashpay.com
+
+## 1.Remix 本地网络部署
+
+- 操作流程请看视频
+
+## 2.将 Remix 自带的合约部署到 RootHash Chain
+
+将 RootHash Chain 的 RPC 链接添加到 MetaMask, 链接 MetaMask 部署合约即可,  操作流程请回看视频
+
+## 3.用 Remix 写一个简单合约进行部署操作
+
+- 代码如下
+
+```Java
+// SPDX-License-Identifier: GPL-3.0
+
+pragma solidity >=0.8.2 <0.9.0;
+
+contract TheWeb3First {
+
+    uint256 public number;
+
+    constructor(uint256 _number) {
+        number = _number;
+    }
+
+    function add(uint256 a, uint256 b) public pure returns (uint256){
+        return a + b;
+    }
+
+  
+    function mul(uint256 a, uint256 b) public pure returns (uint256){
+        return a * b;
+    }
+
+    function sub(uint256 a, uint256 b) public pure returns (uint256) {
+        return  a - b;
+    }
+
+     function div(uint256 a, uint256 b) public pure returns (uint256) {
+        return  a / b;
+    }
+
+     function returnNumber() public view returns (uint256){
+        return number;
+    }
+}
+```
+
+# 六. EVM 链的 RPC 节点
+
+## 1. 开放 RPC 节点的寻找办法
+
+开放节点能满足日常的开发需求，但是当数据请求量过大或者生产环境都不会使用开发的 RPC 
+
+### 1.1 项目方的官方文档
+
+- Cpchain: https://cpchain.gitbook.io/cpchaingitbook/user-guides/connecting-wallet-to-cp-chain
+- Mantle: https://docs.mantle.xyz/network/for-developers/resources-and-tooling/node-endpoints-and-providers
+- Manta: https://docs.manta.network/docs/manta-pacific/Tools/Node%20Providers
+
+### 1.2 Chainlist 
+
+- https://chainlist.org/
+- 搜索 manta, 在红线可以找到
+
+![chainlist_1](imgs/chainlist_1.png)
+
+- 如果需要测试网，include 测试网就行
+
+![chainlist_2](imgs/chainlist_2.png)
+
+## 2. 付费 RPC 
+
+如果需要大批量数据请求或者生产环境使用，需要自建 RPC 或者使用付费 RPC 
+
+- 使用付费 RPC 可以选择的厂商
+  - https://www.alchemy.com/ 稳定性比较高的厂商
+  - https://www.ankr.com/ 稳定性比较高的厂商
+  - https://getblock.io/
+- 自建 RPC 节点
+  - 按照官方文档的指导搭建，但是需要做负载均衡
+
+![自建RPC负载均衡](imgs/自建RPC负载均衡.png)
+
+# 七.合约，合约 ABI 和 CallData 的关系
+
+在 Remix 里面我们提到了几个东西，一个是合约，一个 abi,  还有 calldata, 那么合约，abi 和 calldata 之间的关系是什么呢
+
+![合约 ABI 和 CallData](imgs/合约 ABI 和 CallData.png)
+
+- Solidity 智能合约部署到链上是形成字节码
+- Solidity 智能合约编译之后得到是 abi 文件，abi 里面也含有合约字节码
+- 调用者使用 ABI 生成调用 calldata 放到交易里面发送到链上，链上回去解析 calldata 执行对应合约逻辑
+
