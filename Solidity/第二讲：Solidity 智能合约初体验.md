@@ -333,7 +333,7 @@ contract TheWeb3First {
 
 在 Remix 里面我们提到了几个东西，一个是合约，一个 abi,  还有 calldata, 那么合约，abi 和 calldata 之间的关系是什么呢
 
-![合约 ABI 和 CallData](imgs/合约 ABI 和 CallData.png)
+![合约ABI和CallData](imgs/合约ABI和CallData.png)
 
 - Solidity 智能合约部署到链上是形成字节码
 - Solidity 智能合约编译之后得到是 abi 文件，abi 里面也含有合约字节码
