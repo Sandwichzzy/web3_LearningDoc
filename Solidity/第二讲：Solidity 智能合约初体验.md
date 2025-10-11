@@ -335,7 +335,272 @@ contract TheWeb3First {
 
 ![合约ABI和CallData](imgs/合约ABI和CallData.png)
 
-- Solidity 智能合约部署到链上是形成字节码
-- Solidity 智能合约编译之后得到是 abi 文件，abi 里面也含有合约字节码
-- 调用者使用 ABI 生成调用 calldata 放到交易里面发送到链上，链上回去解析 calldata 执行对应合约逻辑
 
+
+
+
+
+
+
+
+"Solidity合约编译后生成**字节码**和**ABI**。字节码部署到链上形成可执行的合约，而ABI作为接口描述文件，用于生成调用合约函数所需的calldata。当用户发起交易时，根据ABI将函数调用编码为calldata，EVM据此执行合约中对应的逻辑。"
+
+- Solidity 智能合约编译之后得到是 **abi** 文件（是一个**接口描述文件**（JSON格式））和**字节码**
+- Solidity 智能合约部署到链上是形成字节码**(Bytecode)**形成可执行的合约
+- 调用者根据ABI将函数调用编码为calldata放到交易里面发送到链上，EVM链上回去解析 calldata 执行对应合约逻辑
+
+# 八.智能合约开发工具
+
+- Remix: 适合小白学习的时候使用，不太适合工程化的项目
+- Truffle: 很早使用的一个智能合约编译工具，现在已经过时了
+- 纯白矩阵：xxx
+- **Hardhat: 比较流行智能合约开发工程化软件**
+- **Foundry: 使用最广泛，最受欢迎智能合约工程化软件** 
+
+# 九.hardhat 的使用
+
+目前比较流行智能合约开发工具，用于构建，测试，部署和维护以太坊的智能合约开发工具，提供很多工具、插件给到了我们开发使用，方便开发者提供工作效率。
+
+## 1. Hardhat 的安装和初始化
+
+```Plain
+npm install hardhat -g
+npm install --save-dev hardhat
+```
+
+## 2. 使用 hardhat 初始化一个项目
+
+```Plain
+mkdir projectName(由开发者自己定义)
+cd projectName
+npx hardhat 或者 npx hardhat init
+```
+
+- 输出结果
+
+```Plain
+? What do you want to do? …
+❯ Create a JavaScript project
+  Create a TypeScript project
+  Create a TypeScript project (with Viem)
+  Create an empty hardhat.config.js
+  Quit
+```
+
+- 选择你最喜欢的方式往下执行，执行之后可以看到以下的目录结构（选择：Create a JavaScript project）
+
+![hardhat项目初始化结构](imgs/hardhat项目初始化结构.png)
+
+- Contacts: 合约代码
+- ignition/modules：是部署脚本
+- Test: 测试脚本
+
+## 3. Hardhat 测试合约代码
+
+```Plain
+npx hardhat test
+
+npx hardhat test ./test/TheWeb3First.t.sol
+```
+
+## 4. 用 hardhat 本地节点
+
+```Plain
+npx hardhat node
+```
+
+## 5. 本地部署合约
+
+```Plain
+npx hardhat ignition deploy ./ignition/modules/xxx.ts --network localhost
+```
+
+## 6. 合约代码验证
+
+```Plain
+npx hardhat ignition deploy ./ignition/modules/xxx.ts --network localhost --verify
+```
+
+- 即部署也验证
+
+```Plain
+npx hardhat verify --network roothash 0x97558950aD19247f3C1eeF271be6A32f8b836B2B
+```
+
+- 需要配置一下浏览器的信息，如果是默认支持的链是简化配置方式，不需要配置 customChains 的内容
+
+```YAML
+etherscan: {
+  apiKey: {
+    'roothash': 'empty'
+  },
+  customChains: [
+    {
+      network: "roothash",
+      chainId: 90102,
+      urls: {
+        apiURL: "https://explorer.roothashpay.com/api",
+        browserURL: "https://explorer.roothashpay.com"
+      }
+    }
+  ]
+}
+```
+
+## 7. 其他的命令
+
+```Plain
+npx hardhat ignition visualize ./ignition/modules/TheWeb3First.ts
+```
+
+- 执行完命令之后会生成一个 html, 里面展示了你 js 的所有函数调用情况
+
+## 8. 清除先前的执行
+
+```Bash
+npx hardhat ignition wipe deploymentId futureId
+```
+
+## 9. 使用 reset 清除现有的部署
+
+```Bash
+npx hardhat ignition deploy ignition/modules/Apollo.ts --network localhost --reset
+```
+
+## 10. 使用 create2 部署
+
+```Bash
+npx hardhat ignition deploy ignition/modules/Apollo.js --network sepolia --strategy create2
+```
+
+## 11. 课程的项目链接
+
+- https://github.com/the-web3-contracts/basic-evm-contracts/tree/main/learn-hardhat
+- [basic-evm-contracts/leran-hardhat at main · the-web3-contracts/basic-evm-contracts](https://github.com/the-web3-contracts/basic-evm-contracts/tree/main/leran-hardhat)
+
+# 十.foundry 的使用介绍
+
+为 EVM 链审计的一个工具链，帮助开发快速构建项目，编写合约测试，部署项目到链上等，Foundry 主要有以下组成部分
+
+- Forge: 
+  - 是 foundry 的核心工具，用于编译，测试和部署智能合约
+  - 支持 Solidity 和 Yul 语言，提供高效的编译器，并于 EVM 链紧密集成
+  - 允许开发轻松运行单元测试，测试覆盖率和模拟测试环境
+- Cast 
+  - Cast 是 foundry 的命令行工具，用于与以太坊区块链进行交互
+  - 支持常见的区块链操作，例如查询区块，交易，账户余额
+  - Cast 还支持脚本编写，帮助开发者自动化重复的区块链交互操作
+- Avnil
+  - Anvil foundy 本地开发节点，用户模拟以太坊网络环境
+  - 提供本地的一个轻量级别测试网络，支持合约的快速部署和测试
+  - 运行开发在本地调试合约，方便快速迭代和调整
+
+## 1. 安装与简单的命令
+
+```Plain
+curl -L https://foundry.paradigm.xyz | bash
+
+foundryup
+```
+
+## 2. 使用 foundry 创建项目
+
+```Plain
+forge init project-name
+```
+
+## 3. 使用 foundry 编译，构建和测试合约
+
+```Plain
+forge test 可以指定测试文件，也可以直接，直接执行时全量的文件执行
+forge build 构建合约
+forge comepile 编译合约
+```
+
+## 4. Foundry 安装依赖
+
+```Plain
+forge install xxx
+
+例子
+forge install OpenZeppelin/openzeppelin-contracts --no-commit
+forge install OpenZeppelin/openzeppelin-contracts-upgradeable --no-commit
+```
+
+## 5. Remapping 文件的生成
+
+```Plain
+forge remappings 
+```
+
+## 6. 使用 foundry 部署验证合约
+
+```Plain
+ forge script ./script/TheWebThree.s.sol:TreasureManagerScript --rpc-url https://rpc.roothashpay.com --private-key 0x5cee86cfac9b46271055a89bd872e0dd6c3764f71354f790d151ab210e7c10ec --broadcast
+forge verify-contract --rpc-url https://rpc.roothashpay.com --verifier blockscout --verifier-url 'https://explorer.roothashpay.com/api/' 0x0e4B5e7c52EBB0a471716fBcc215Ef84eD752e16 ./src/TheWebThree.sol:TheWebThree
+```
+
+## 7. Cast 常用方法举例
+
+- 创建钱包
+
+```Plain
+cast wallet n
+```
+
+- 获取链上最新区块
+
+```Plain
+cast bn --rpc-url https://rpc.roothashpay.com
+```
+
+- 获取特定区块的信息
+
+```Plain
+cast bl 248995 --rpc-url https://rpc.roothashpay.com
+```
+
+- 获取 tx 的详情
+
+```Plain
+cast tx 0xa058cc51f2f6f707846d536747bb1ad34837829beb715ef3c0366b460e0596a6 --rpc-url https://rpc.roothashpay.com
+```
+
+- 使用 cast call 合约读
+
+```Plain
+ cast call --rpc-url https://rpc.roothashpay.com 0x0e4B5e7c52EBB0a471716fBcc215Ef84eD752e16 "nextMint()(uint256)"
+```
+
+- 使用 cast call 合约写
+
+```Plain
+cast send --rpc-url https://rpc.roothashpay.com --private-key 0x5cee86cfac9b46271055a89bd872e0dd6c3764f71354f790d151ab210e7c10ec 0x0e4B5e7c52EBB0a471716fBcc215Ef84eD752e16 "mint(address,uint256)" 0x5d9BD107AF4E4C305408EA376D376afD4Df1bE39 1000000000000000000000000000
+```
+
+## 8. Anvil 的本地测试
+
+- 部署合约
+
+```Plain
+ forge script ./script/TheWebThree.s.sol:TreasureManagerScript --rpc-url http://127.0.0.1:8545 --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 --broadcast
+```
+
+- 读合约数据
+
+```Plain
+ cast call --rpc-url http://127.0.0.1:8545 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512 "nextMint()(uint256)" 
+```
+
+- 写合约数据
+
+```Plain
+cast send --rpc-url http://127.0.0.1:8545 --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512 "mint(address,uint256)" 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 1000000000000000000000000000
+```
+
+# 十一.总结
+
+- 熟悉 rpc 寻找方式，根据业务判断是否需要自己搭建节点
+- 了解 Remix 的使用
+- 了解合约，abi, bytecode 和 calldata 之间的关系
+- Hardhat 和 Foundry 需要能够熟练操作
