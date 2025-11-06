@@ -30,4 +30,10 @@ FCC 代币的很大一部分是给到社区活动挖矿
 
 # 二.项目的业务分析
 
+![fishcake项目流程图](./imgs/fishcake项目流程图.png)
+
+
+
 # 三.代码实战
+
+- https://github.com/FishcakeLab/fishcake-contracts
