@@ -30,10 +30,44 @@ FCC 代币的很大一部分是给到社区活动挖矿
 
 # 二.项目的业务分析
 
-![fishcake项目流程图](./imgs/fishcake项目流程图.png)
+## 1. 合约项目
 
+![fishcake合约流程图](imgs/fishcake合约流程图.png)
 
+- 代码：https://github.com/FishcakeLab/fishcake-contracts
 
-# 三.代码实战
+## 2. FishCake 的整个后端项目
 
-- https://github.com/FishcakeLab/fishcake-contracts
+![fishcake整体框架](imgs/fishcake整体框架.png)
+
+- 代码：https://github.com/FishcakeLab/fishcake-service/tree/main
+
+### 2.1 FishCake 的扫快的逻辑
+
+- client.go： 里面封装调用 eth 原生方法的接口
+  - eth_getBlockByHash
+  - eth_getBlockByNumber
+  - eth_getTransactionByHash
+  - eth_getTransactionReceipt
+  - eth_getProof
+  - eth_getLogs
+
+#### 2.1.2 简单的一种扫块模式
+
+- 不需要像我们这样存储整个 header,  只需要存储 block 的 number, hash 和 parent_hash
+- 扫块一般扫一个范围，主要找扫块开始块和结束块，怎么去确定开始块和结束块
+  - startBlock
+    - 系统首次启动，一般数据库里面都是空的，所有要么使用配置的开始块，要么用链最新块做开始块
+    - 系统重启，一般数据库里面都有数据，使用数据库里面最新区块做为开始块。
+
+![扫块流程图](imgs/扫块流程图.png)
+
+### 2.2 确认位的两种用法
+
+- 第一种扫块还是要到最新区块，只是通知业务时候，最新区块 - 要通知块里面的数据 >= 确认位，这种方式钱包里面经常使用。
+
+![第一种使用确认位方式](imgs/第一种使用确认位方式.png)
+
+- 第二种用户，我不用扫到最新区块，而是扫最新区块 - 确认位（极少的用户，用户体验很差）
+
+  ![第二种使用确认位方式](imgs/第二种使用确认位方式.png)
