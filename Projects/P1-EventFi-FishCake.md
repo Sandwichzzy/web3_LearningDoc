@@ -8,8 +8,6 @@
 
 活动即挖矿，把活动做成 POW 的模式，集钱包，活动挖矿，经济模型和质押为一体的 Web3 项目
 
-
-
 ## 1. 平台消除了中间商
 
 鱼饼是基于激励的这个营销平台消除了中间商，例如一个社区来帮助项目方做活动，项目方需要把资金打给社区，社区再通过黑客松活动奖励，或者其他活动方式将分给用户，在这个例子里面，社区就是中间商，我们需要消除中间商，项目可以直接将要做活动代币打入合约，代币不再经过社区团队手。
@@ -71,3 +69,38 @@ FCC 代币的很大一部分是给到社区活动挖矿
 - 第二种用户，我不用扫到最新区块，而是扫最新区块 - 确认位（极少的用户，用户体验很差）
 
   ![第二种使用确认位方式](imgs/第二种使用确认位方式.png)
+
+## 3. 合约事件监听器
+
+整个项目需要监听的合约事件
+
+- 活动创建
+- 活动空投
+- 活动结束
+- NFT Mint
+
+![fishcake事件解析流程图](imgs/fishcake事件解析流程图.png)
+
+true 应该是 endEventBlock =blockHeaderLatestBlock 图中判断结果写反了
+
+## 4. 业务处理 worker
+
+### 4.1 空投 worker
+
+- clean_data_worker: 清除数据库里面的 block_header 的数据，只保留 200000 条数据
+- drop_worker 和 system_drop_worker：FCC 空投任务，第一次交互空投，第一次创建钱包地址空投
+
+![fishcake空投worker](imgs/fishcake空投worker.png)
+
+上面这样做的原因是：Ethereum 交易发送，并不代表成功，而是需要收据树生成，eth_getTransactionReceipt 返回 Recepit 的状态才能判断交易是否是成功, It is either 1 (success) or 0 (failure) encoded as a hexadecimal。
+
+### 4.2 QueueTx 交易的任务
+
+![fishcake交易队列worker](imgs/fishcake交易队列worker.png)
+
+- `/v1/chain_info/submit-tx`：api 是将交易提价 QueueTx 表;
+- 定时任务 `ProcessSendQueueTx` 将 QueueTx 表里面的交易发送到链上;
+- 定时任务 `AfterSentQueueTx` 处理交易状态，获取 eth_getTransactionReceipt;
+- `/v1/chain_info/txn_status`：检索交易状态;
+
+为什么要这样做：FishCake 是空投，线下不断的空投，前端来做，要等交易一笔一笔的成功，如果用 QueueTx 就不用等了，直接将签名的交易全部丢上来，由后端处理完成告诉状态。
