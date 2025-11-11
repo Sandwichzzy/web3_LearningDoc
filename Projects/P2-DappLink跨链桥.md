@@ -290,3 +290,17 @@ BridgeFinalizeETH 和 BridgeFinalizeERC20 这两个是目标链上将资金转�
   - ```Plain
     emit MessageClaimed(sourceChainId, destChainId, sourceTokenAddress, destTokenAddress, messageHash, _nonce);
     ```
+
+## 3. 跨链桥的后端项目 （难点）
+
+### 3.1 项目的整体架构
+
+![Dapplink跨链桥后端业务图](imgs/Dapplink跨链桥后端业务图.png)
+
+#### 3.1.1 数据初始化
+
+![Dapplink跨链桥数据DB初始化](imgs/Dapplink跨链桥数据DB初始化.png)
+
+#### 3.1.2 合约事件同步的代码流程
+
+![Dapplink跨链后端合约事件同步流程图](imgs/Dapplink跨链后端合约事件同步流程图.png)
