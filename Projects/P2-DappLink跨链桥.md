@@ -304,3 +304,32 @@ BridgeFinalizeETH 和 BridgeFinalizeERC20 这两个是目标链上将资金转�
 #### 3.1.2 合约事件同步的代码流程
 
 ![Dapplink跨链后端合约事件同步流程图](imgs/Dapplink跨链后端合约事件同步流程图.png)
+
+#### 3.1.3 发交易到链上整体过程
+
+![跨链桥后端发交易到链上整体过程](imgs/跨链桥后端发交易到链上整体过程.png)
+
+#### 3.1.4 假设跨桥的人很多，交易很拥堵，怎么解决
+
+![负载均衡](imgs/负载均衡.png)
+
+- 需要加从目标链转资金给用户地址
+  - n 个地址，里面有 m 笔交易，将 m 笔交易均分给地址处理，每个地址开一协程，处理完成之后将 recepit 的机会丢到 channel,  然后有一个单独进程去操作数据库。
+- 或者把你的桥的合约做成批量给用户转账
+  - 合约支持，单地址调用
+
+封装交易处理的比较优秀的代码：https://github.com/ethereum-optimism/optimism/tree/develop/op-service/txmgr
+
+# 四. GasOracle 
+
+## 1. 为什么需要 GasOracle
+
+- GasOracle 预测目标要消耗的 GasFee, GasFee 是链上消耗的手续费
+
+## 2. 做法结构
+
+![gasOracle结构](imgs/gasOracle结构.png)
+
+
+
+项目代码：https://github.com/cpchain-network/gas-oracle
