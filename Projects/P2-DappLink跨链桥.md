@@ -295,6 +295,8 @@ BridgeFinalizeETH 和 BridgeFinalizeERC20 这两个是目标链上将资金转�
 
 ### 3.1 项目的整体架构
 
+代码：https://github.com/the-web3-contracts/relayer-node
+
 ![Dapplink跨链桥后端业务图](imgs/Dapplink跨链桥后端业务图.png)
 
 #### 3.1.1 数据初始化
@@ -333,3 +335,365 @@ BridgeFinalizeETH 和 BridgeFinalizeERC20 这两个是目标链上将资金转�
 
 
 项目代码：https://github.com/cpchain-network/gas-oracle
+
+# 五.整套系统运行部署
+
+## 1. 部署合约
+
+- 生成钱包地址 cast wallet n
+
+```Plain
+Address:     0x55225359b717dA1EA4270F78ddA384b0A9f53E28
+Private key: 0xa3c456042022db6b15af6697ad215032881b1842e763e89ec5d4bebc16a443aa
+```
+
+- 配置环境变量
+
+```Plain
+export PRIVATE_KEY=0xa3c456042022db6b15af6697ad215032881b1842e763e89ec5d4bebc16a443aa
+export RELAYER_ADDRESS=0x55225359b717dA1EA4270F78ddA384b0A9f53E28
+export MULTI_SIGNER=0x55225359b717dA1EA4270F78ddA384b0A9f53E28
+```
+
+- 部署合约
+
+```Plain
+forge script ./script/DeployerCpChainBridge.s.sol:DeployerCpChainBridge --rpc-url https://rpc-testnet.roothashpay.com --private-key $PRIVATE_KEY --broadcast
+```
+
+- 部署的合约地址(RootHash Chain TestNet)
+
+```Plain
+  deploy proxyMessageManager: 0x81Ec84f2ADE4e28717f72957F8ABEF85675f2501
+  deploy proxyPoolManager: 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559
+```
+
+- Sepolia(Ethereum TestNet)
+
+```Plain
+  deploy proxyMessageManager: 0x81Ec84f2ADE4e28717f72957F8ABEF85675f2501
+  deploy proxyPoolManager: 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559
+```
+
+- 在 Sepolia 和 RootHash Chain TestNet 部署一个 TWT(TheWebThree)代币，用来做跨链
+
+```Plain
+forge script ./script/TheWebThree.s.sol:TreasureManagerScript  --rpc-url  $RPC_URL --private-key $PRIVATE_KEY --broadcast
+```
+
+- Sepolia
+
+```Plain
+  theWebThree address====== 0x12E60438898FB3b4aac8439DEeD57194Dc9C87aa
+```
+
+- RootHash Chain TestNet
+
+```Plain
+  theWebThree address====== 0x12E60438898FB3b4aac8439DEeD57194Dc9C87aa
+```
+
+## 2. 合约的初始化配置
+
+- Sepolia 桥合约初始化
+
+```Plain
+获取 chainID:  cast chain-id --rpc-url 
+
+给桥合约设置 ChainId: 
+cast send --rpc-url $S_URP_URL --private-key $PRIVATE_KEY 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559 "setValidChainId(uint256,bool)" 90101 true
+
+cast send --rpc-url $S_URP_URL --private-key $PRIVATE_KEY 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559 "setValidChainId(uint256,bool)" 11155111  true
+
+cast send --rpc-url $S_URP_URL --private-key $PRIVATE_KEY 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559 "setSupportERC20Token(address,bool)" 0x12E60438898FB3b4aac8439DEeD57194Dc9C87aa true
+
+往合约里面打入 TWT Token
+cast send --rpc-url $S_URP_URL --private-key $PRIVATE_KEY 0x12E60438898FB3b4aac8439DEeD57194Dc9C87aa "approve(address,uint256)" 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559 100000000000000000000000000
+
+cast send --rpc-url $S_URP_URL --private-key $PRIVATE_KEY 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559 "depositErc20ToBridge(address,uint256)" 0x12E60438898FB3b4aac8439DEeD57194Dc9C87aa 10000000000000000000000000
+
+校验余额
+cast call --rpc-url $S_URP_URL 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559 "FundingPoolBalance(address)(uint256)" 0x12E60438898FB3b4aac8439DEeD57194Dc9C87aa
+```
+
+- RootHash Chain TestNet
+
+```Plain
+cast send --rpc-url $R_URP_URL --private-key $PRIVATE_KEY 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559 "setValidChainId(uint256,bool)" 90101 true
+ 
+cast send --rpc-url $R_URP_URL --private-key $PRIVATE_KEY 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559 "setValidChainId(uint256,bool)" 11155111 true
+
+cast send --rpc-url $R_URP_URL --private-key $PRIVATE_KEY 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559 "setSupportERC20Token(address,bool)" 0x12E60438898FB3b4aac8439DEeD57194Dc9C87aa true
+
+
+往合约里面打入 TWT Token
+cast send --rpc-url $R_URP_URL --private-key $PRIVATE_KEY 0x12E60438898FB3b4aac8439DEeD57194Dc9C87aa "approve(address,uint256)" 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559 100000000000000000000000000
+
+cast send --rpc-url $R_URP_URL --private-key $PRIVATE_KEY 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559 "depositErc20ToBridge(address,uint256)" 0x12E60438898FB3b4aac8439DEeD57194Dc9C87aa 10000000000000000000000000
+
+校验余额
+cast call --rpc-url $R_URP_URL 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559 "FundingPoolBalance(address)(uint256)" 0x12E60438898FB3b4aac8439DEeD57194Dc9C87aa
+```
+
+## 3. 启动 GasOracle 服务
+
+- 配置环境变量
+
+```YAML
+slave_db_enable: false
+enable_api_cache: false
+back_offset: 2
+loop_internal: 5s
+
+server:
+  host: 0.0.0.0
+  port: 8081
+
+skyeye_url: http://54.169.32.230:38980 //暂时未使用， token行情价使用写死的数据
+symbols:
+  - name: "btc"
+    decimal: 6
+  - name: "eth"
+    decimal: 18
+  - name: "rhs"
+    decimal: 18
+  - name: "usdc"
+    decimal: 6
+  - name: "twt"
+    decimal: 18
+
+rpcs:
+  - rpc_url: $RPC_URL
+    chain_id: 11155111
+    native_token: ETH
+    decimal: 18
+
+  - rpc_url: 'https://rpc-testnet.roothashpay.com'
+    chain_id: 90101
+    native_token: RHS
+    decimal: 18
+
+master_db:
+  db_host: "127.0.0.1"
+  db_port: 5432
+  db_user: "theweb3"
+  db_password: ""
+  db_name: "gasoracle"
+
+slave_db:
+  db_host: "127.0.0.1"
+  db_port: 5432
+  db_user: "theweb3"
+  db_password: ""
+  db_name: "gasoracle"
+```
+
+- 数据库初始化
+
+```Plain
+create database gasoracle;
+
+选择 go 的版本并编译代码
+
+make
+
+
+./gas-oracle migrate -c ./gas-oracle.local.yaml
+
+
+guoshijiang=# \c gasoracle
+您现在已经连接到数据库 "gasoracle",用户 "theweb3".
+gasoracle=#
+gasoracle=# \d
+                   关联列表
+ 架构模式 |    名称     |  类型  |   拥有者
+----------+-------------+--------+-------------
+ public   | gas_fee     | 数据表 | guoshijiang
+ public   | token_price | 数据表 | guoshijiang
+(2 行记录)
+
+gasoracle=#
+```
+
+- 启动服务
+
+```Plain
+启动手续费扫链服务：./gas-oralce index -c ./gas-oracle.local.yaml
+
+启动 RPC 服务：./gas-oralce grpc -c ./gas-oracle.local.yaml
+
+RPC 调用：grpcui --plaintext 127.0.0.1:8080
+```
+
+- 给新部署的代币插入一条价行情 (暂时写死)
+
+```SQL
+INSERT INTO token_price (
+    token_name,
+    token_symbol,
+    skeye_symbol,
+    market_price,
+    decimal,
+    timestamp
+) VALUES (
+    'ETH',
+    'ETH',
+    'eth_usdt',
+    '3480',
+    18,
+    EXTRACT(EPOCH FROM NOW())::integer
+);
+```
+
+- 调度 RPC
+
+```Plain
+grpcurl -plaintext -d '{
+  "chainId": "11155111",
+  "symbol": "TWT"
+}' 127.0.0.1:8081 cpchain.gasfee.TokenGasPriceServices.getTokenPriceAndGasByChainId
+```
+
+## 4. 启动 Relayer-Node
+
+- 配置环境变量
+
+```YAML
+slave_db_enable: false
+private_key: "a3c456042022db6b15af6697ad215032881b1842e763e89ec5d4bebc16a443aa"
+num_confirmations: 3
+safe_abort_nonce_too_low_count: 3
+caller_address: "0x55225359b717dA1EA4270F78ddA384b0A9f53E28"
+enable_api_cache: false
+gas_oracle_endpoint: "127.0.0.1:8081"
+
+server:
+  host: 0.0.0.0
+  port: 8082
+
+metrics:
+  host: 0.0.0.0
+  port: 8083
+
+rpcs:
+  - rpc_url: 'https://eth-sepolia.g.alchemy.com/v2/afSCtxPWD3NE5vSjJm2GQ'
+    chain_id: 11155111
+    start_block: 9618149
+    header_buffer_size: 50
+    event_unpack_block: 9618149
+    contracts:
+      pool_manager_address: "0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559"
+      message_manager_address: "0x81Ec84f2ADE4e28717f72957F8ABEF85675f2501"
+
+  - rpc_url: 'https://rpc-testnet.roothashpay.com'
+    chain_id: 90101
+    start_block: 1650800
+    header_buffer_size: 500
+    event_unpack_block: 1650800
+    contracts:
+      pool_manager_address: "0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559"
+      message_manager_address: "0x81Ec84f2ADE4e28717f72957F8ABEF85675f2501"
+
+master_db:
+  db_host: "127.0.0.1"
+  db_port: 5432
+  db_user: "guoshijiang"
+  db_password: ""
+  db_name: "relayernode"
+
+slave_db:
+  db_host: "127.0.0.1"
+  db_port: 5432
+  db_user: "guoshijiang"
+  db_password: ""
+  db_name: "relayernode"
+```
+
+- 初始化数据库
+
+```Plain
+create database relayernode;
+
+./relayer-node migrate -c ./relayer-node.local.yaml
+
+relayernode=# \d
+没有找到任何关系.
+relayernode=# \d
+                          关联列表
+ 架构模式 |           名称           |  类型  |   拥有者
+----------+--------------------------+--------+-------------
+ public   | block_headers            | 数据表 | guoshijiang
+ public   | block_headers_11155111   | 数据表 | guoshijiang
+ public   | block_headers_90101      | 数据表 | guoshijiang
+ public   | bridge_finalize          | 数据表 | guoshijiang
+ public   | bridge_initiate          | 数据表 | guoshijiang
+ public   | bridge_msg_hash          | 数据表 | guoshijiang
+ public   | bridge_msg_sent          | 数据表 | guoshijiang
+ public   | bridge_record            | 数据表 | guoshijiang
+ public   | claim_reward             | 数据表 | guoshijiang
+ public   | contract_events          | 数据表 | guoshijiang
+ public   | contract_events_11155111 | 数据表 | guoshijiang
+ public   | contract_events_90101    | 数据表 | guoshijiang
+ public   | event_block              | 数据表 | guoshijiang
+ public   | lp_withdraw              | 数据表 | guoshijiang
+ public   | staking_record           | 数据表 | guoshijiang
+ public   | token_config             | 数据表 | guoshijiang
+(16 行记录)
+```
+
+- 启动服务
+
+```Plain
+./relayer-node index -c relayer-node.local.yaml
+
+./relayer-node api -c ./relayer-node.local.yaml
+INFO [11-13|11:17:40.787] running api...
+INFO [11-13|11:17:40.793] API server started                       addr=[::]:8082
+```
+
+- 开始跨桥
+
+```Plain
+Address:     0xf7BA939820b38684d122D13a879639C151fBD230
+Private key: 0xe72e9e352fa975ddbeeed5cff23d90416e1e6a3447fae7d6e46e2ecf021d5ef5
+```
+
+```
+function BridgeInitiateERC20(uint256 sourceChainId, uint256 destChainId, address to, address sourceTokenAddress, address destTokenAddress, uint256 value) external whenNotPaused nonReentrant returns (bool) 
+```
+
+```Plain
+cast send --rpc-url $S_URP_URL --private-key $PRIVATE_KEY 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559 "BridgeInitiateERC20(uint256,uint256,address,address,address,uint256)" 11155111 90101 0xf7BA939820b38684d122D13a879639C151fBD230 0x12E60438898FB3b4aac8439DEeD57194Dc9C87aa 0x12E60438898FB3b4aac8439DEeD57194Dc9C87aa 120000000000000000000
+```
+
+可能的错误
+
+Rpc 查询区块头失败，是因为一次查询区块数量太多，导致请求超时
+
+```SQL
+database operation                       
+module=db duration_ms=0 rows_affected=3 sql="INSERT INTO \"block_headers_90101\" (\"hash\",\"parent_hash\",\"number\",\"timestamp\",\"rlp_bytes\") VALUES (...)" ERROR[11-13|11:23:32.910] Call eth_getBlockByNumber method fail    err="Post \"https://eth-sepolia.g.alchemy.com/v2/afSCtxPWD3NE5vSjJm2GQ\": context deadline exceeded" ERROR[11-13|11:23:32.910] sync                                     
+"chain "=11155111 "error querying for headers err"="unable to query latest block: Post \"https://eth-sepolia.g.alchemy.com/v2/afSCtxPWD3NE5vSjJm2GQ\": context deadline exceeded"
+```
+
+报错了，忘记配置第二个 token 
+
+```Plain
+INFO [11-13|11:29:24.552] database operation                       module=db duration_ms=0  rows_affected=0  sql="SELECT * FROM \"token_config\" WHERE token_address = '0x12e60438898fb3b4aac8439deed57194dc9c87aa' and chain_id = 90101 LIMIT 1"
+ERROR[11-13|11:29:24.552] "Query token by source chain fail, ❌❌❌ maybe you must config token ❌❌❌" err=<nil>
+
+解决：
+INSERT INTO token_config (
+    chain_id,
+    token_address,
+    token_name,
+    token_decimal,
+    timestamp
+) VALUES (
+    90101,
+    '0x12E60438898FB3b4aac8439DEeD57194Dc9C87aa',  // 这里的地址要小写
+    'twt',
+    '18',
+    EXTRACT(EPOCH FROM NOW())::integer
+);
+```
