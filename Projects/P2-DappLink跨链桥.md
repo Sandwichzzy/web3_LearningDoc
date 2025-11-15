@@ -364,16 +364,20 @@ forge script ./script/DeployerCpChainBridge.s.sol:DeployerCpChainBridge --rpc-ur
 - 部署的合约地址(RootHash Chain TestNet)
 
 ```Plain
-  deploy proxyMessageManager: 0x81Ec84f2ADE4e28717f72957F8ABEF85675f2501
-  deploy proxyPoolManager: 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559
+  deploy proxyMessageManager: 0x82B226b8B6f5380455D1F29D019A3A687d2B936d
+  deploy proxyPoolManager: 0x5b6b0fce154f33F88f8cEd938a8FA6CCFAF8c8A4
 ```
 
-- Sepolia(Ethereum TestNet)
+- Sepolia(Ethereum TestNet) 
 
 ```Plain
-  deploy proxyMessageManager: 0x81Ec84f2ADE4e28717f72957F8ABEF85675f2501
-  deploy proxyPoolManager: 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559
+  deploy proxyMessageManager: 0xDFDD41E178AcEB0258cb30Ff71c4EA5d60815B8D
+  deploy proxyPoolManager: 0x015DD02C6D1CF3f1711dcf453ed4b4f34B778E65
 ```
+
+注意这里使用的是 CREATE（普通部署）： 合约地址 = keccak256(RLP(部署者地址, nonce))[12:]
+
+我的账户在这两条链上的交易nonce值不一样的，所以这里同一个合约部署出来的合约地址不同！
 
 - 在 Sepolia 和 RootHash Chain TestNet 部署一个 TWT(TheWebThree)代币，用来做跨链
 
@@ -384,13 +388,13 @@ forge script ./script/TheWebThree.s.sol:TreasureManagerScript  --rpc-url  $RPC_U
 - Sepolia
 
 ```Plain
-  theWebThree address====== 0x12E60438898FB3b4aac8439DEeD57194Dc9C87aa
+  theWebThree address====== 0xf43C3CFF8c11F2d3ebf8C6d796Ed60020Fc66286
 ```
 
 - RootHash Chain TestNet
 
 ```Plain
-  theWebThree address====== 0x12E60438898FB3b4aac8439DEeD57194Dc9C87aa
+  theWebThree address====== 0x26fc1d2B482EbA8e88535FCbA2c6dCe902B2752f
 ```
 
 ## 2. 合约的初始化配置
@@ -401,38 +405,38 @@ forge script ./script/TheWebThree.s.sol:TreasureManagerScript  --rpc-url  $RPC_U
 获取 chainID:  cast chain-id --rpc-url 
 
 给桥合约设置 ChainId: 
-cast send --rpc-url $S_URP_URL --private-key $PRIVATE_KEY 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559 "setValidChainId(uint256,bool)" 90101 true
+cast send --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY 0x015DD02C6D1CF3f1711dcf453ed4b4f34B778E65 "setValidChainId(uint256,bool)" 90101 true
 
-cast send --rpc-url $S_URP_URL --private-key $PRIVATE_KEY 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559 "setValidChainId(uint256,bool)" 11155111  true
+cast send --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY 0x015DD02C6D1CF3f1711dcf453ed4b4f34B778E65 "setValidChainId(uint256,bool)" 11155111  true
 
-cast send --rpc-url $S_URP_URL --private-key $PRIVATE_KEY 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559 "setSupportERC20Token(address,bool)" 0x12E60438898FB3b4aac8439DEeD57194Dc9C87aa true
+cast send --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY 0x015DD02C6D1CF3f1711dcf453ed4b4f34B778E65 "setSupportERC20Token(address,bool)" 0xf43C3CFF8c11F2d3ebf8C6d796Ed60020Fc66286 true
 
 往合约里面打入 TWT Token
-cast send --rpc-url $S_URP_URL --private-key $PRIVATE_KEY 0x12E60438898FB3b4aac8439DEeD57194Dc9C87aa "approve(address,uint256)" 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559 100000000000000000000000000
+cast send --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY 0xf43C3CFF8c11F2d3ebf8C6d796Ed60020Fc66286 "approve(address,uint256)" 0x015DD02C6D1CF3f1711dcf453ed4b4f34B778E65 100000000000000000000000000
 
-cast send --rpc-url $S_URP_URL --private-key $PRIVATE_KEY 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559 "depositErc20ToBridge(address,uint256)" 0x12E60438898FB3b4aac8439DEeD57194Dc9C87aa 10000000000000000000000000
+cast send --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY 0x015DD02C6D1CF3f1711dcf453ed4b4f34B778E65 "depositErc20ToBridge(address,uint256)" 0xf43C3CFF8c11F2d3ebf8C6d796Ed60020Fc66286 10000000000000000000000000
 
 校验余额
-cast call --rpc-url $S_URP_URL 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559 "FundingPoolBalance(address)(uint256)" 0x12E60438898FB3b4aac8439DEeD57194Dc9C87aa
+cast call --rpc-url $SEPOLIA_RPC_URL 0x015DD02C6D1CF3f1711dcf453ed4b4f34B778E65 "FundingPoolBalance(address)(uint256)" 0xf43C3CFF8c11F2d3ebf8C6d796Ed60020Fc66286
 ```
 
 - RootHash Chain TestNet
 
 ```Plain
-cast send --rpc-url $R_URP_URL --private-key $PRIVATE_KEY 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559 "setValidChainId(uint256,bool)" 90101 true
+cast send --rpc-url $ROOTHASH_RPC_URL --private-key $PRIVATE_KEY 0x5b6b0fce154f33F88f8cEd938a8FA6CCFAF8c8A4 "setValidChainId(uint256,bool)" 90101 true
  
-cast send --rpc-url $R_URP_URL --private-key $PRIVATE_KEY 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559 "setValidChainId(uint256,bool)" 11155111 true
+cast send --rpc-url $ROOTHASH_RPC_URL --private-key $PRIVATE_KEY 0x5b6b0fce154f33F88f8cEd938a8FA6CCFAF8c8A4 "setValidChainId(uint256,bool)" 11155111 true
 
-cast send --rpc-url $R_URP_URL --private-key $PRIVATE_KEY 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559 "setSupportERC20Token(address,bool)" 0x12E60438898FB3b4aac8439DEeD57194Dc9C87aa true
+cast send --rpc-url $ROOTHASH_RPC_URL --private-key $PRIVATE_KEY 0x5b6b0fce154f33F88f8cEd938a8FA6CCFAF8c8A4 "setSupportERC20Token(address,bool)" 0x26fc1d2B482EbA8e88535FCbA2c6dCe902B2752f true
 
 
 往合约里面打入 TWT Token
-cast send --rpc-url $R_URP_URL --private-key $PRIVATE_KEY 0x12E60438898FB3b4aac8439DEeD57194Dc9C87aa "approve(address,uint256)" 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559 100000000000000000000000000
+cast send --rpc-url $ROOTHASH_RPC_URL --private-key $PRIVATE_KEY 0x26fc1d2B482EbA8e88535FCbA2c6dCe902B2752f "approve(address,uint256)" 0x5b6b0fce154f33F88f8cEd938a8FA6CCFAF8c8A4 100000000000000000000000000
 
-cast send --rpc-url $R_URP_URL --private-key $PRIVATE_KEY 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559 "depositErc20ToBridge(address,uint256)" 0x12E60438898FB3b4aac8439DEeD57194Dc9C87aa 10000000000000000000000000
+cast send --rpc-url $ROOTHASH_RPC_URL --private-key $PRIVATE_KEY 0x5b6b0fce154f33F88f8cEd938a8FA6CCFAF8c8A4 "depositErc20ToBridge(address,uint256)" 0x26fc1d2B482EbA8e88535FCbA2c6dCe902B2752f 10000000000000000000000000
 
 校验余额
-cast call --rpc-url $R_URP_URL 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559 "FundingPoolBalance(address)(uint256)" 0x12E60438898FB3b4aac8439DEeD57194Dc9C87aa
+cast call --rpc-url $ROOTHASH_RPC_URL 0x5b6b0fce154f33F88f8cEd938a8FA6CCFAF8c8A4 "FundingPoolBalance(address)(uint256)" 0x26fc1d2B482EbA8e88535FCbA2c6dCe902B2752f
 ```
 
 ## 3. 启动 GasOracle 服务
@@ -518,9 +522,9 @@ gasoracle=#
 - 启动服务
 
 ```Plain
-启动手续费扫链服务：./gas-oralce index -c ./gas-oracle.local.yaml
+启动手续费扫链服务：./gas-oracle index -c ./gas-oracle.local.yaml
 
-启动 RPC 服务：./gas-oralce grpc -c ./gas-oracle.local.yaml
+启动 RPC 服务：./gas-oracle grpc -c ./gas-oracle.local.yaml
 
 RPC 调用：grpcui --plaintext 127.0.0.1:8080
 ```
@@ -582,7 +586,7 @@ rpcs:
     header_buffer_size: 50
     event_unpack_block: 9618149
     contracts:
-      pool_manager_address: "0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559"
+      pool_manager_address: "0x015DD02C6D1CF3f1711dcf453ed4b4f34B778E65"
       message_manager_address: "0x81Ec84f2ADE4e28717f72957F8ABEF85675f2501"
 
   - rpc_url: 'https://rpc-testnet.roothashpay.com'
@@ -591,7 +595,7 @@ rpcs:
     header_buffer_size: 500
     event_unpack_block: 1650800
     contracts:
-      pool_manager_address: "0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559"
+      pool_manager_address: "0x015DD02C6D1CF3f1711dcf453ed4b4f34B778E65"
       message_manager_address: "0x81Ec84f2ADE4e28717f72957F8ABEF85675f2501"
 
 master_db:
@@ -663,7 +667,7 @@ function BridgeInitiateERC20(uint256 sourceChainId, uint256 destChainId, address
 ```
 
 ```Plain
-cast send --rpc-url $S_URP_URL --private-key $PRIVATE_KEY 0x9B3F87aa9ABbC18b78De9fF245cc945F794F7559 "BridgeInitiateERC20(uint256,uint256,address,address,address,uint256)" 11155111 90101 0xf7BA939820b38684d122D13a879639C151fBD230 0x12E60438898FB3b4aac8439DEeD57194Dc9C87aa 0x12E60438898FB3b4aac8439DEeD57194Dc9C87aa 120000000000000000000
+cast send --rpc-url $S_URP_URL --private-key $PRIVATE_KEY 0x015DD02C6D1CF3f1711dcf453ed4b4f34B778E65 "BridgeInitiateERC20(uint256,uint256,address,address,address,uint256)" 11155111 90101 0xf7BA939820b38684d122D13a879639C151fBD230 0xf43C3CFF8c11F2d3ebf8C6d796Ed60020Fc66286 0xf43C3CFF8c11F2d3ebf8C6d796Ed60020Fc66286 120000000000000000000
 ```
 
 可能的错误
@@ -679,7 +683,7 @@ module=db duration_ms=0 rows_affected=3 sql="INSERT INTO \"block_headers_90101\"
 报错了，忘记配置第二个 token 
 
 ```Plain
-INFO [11-13|11:29:24.552] database operation                       module=db duration_ms=0  rows_affected=0  sql="SELECT * FROM \"token_config\" WHERE token_address = '0x12e60438898fb3b4aac8439deed57194dc9c87aa' and chain_id = 90101 LIMIT 1"
+INFO [11-13|11:29:24.552] database operation                       module=db duration_ms=0  rows_affected=0  sql="SELECT * FROM \"token_config\" WHERE token_address = '0xf43C3CFF8c11F2d3ebf8C6d796Ed60020Fc66286' and chain_id = 90101 LIMIT 1"
 ERROR[11-13|11:29:24.552] "Query token by source chain fail, ❌❌❌ maybe you must config token ❌❌❌" err=<nil>
 
 解决：
@@ -691,7 +695,7 @@ INSERT INTO token_config (
     timestamp
 ) VALUES (
     90101,
-    '0x12E60438898FB3b4aac8439DEeD57194Dc9C87aa',  // 这里的地址要小写
+    '0xf43C3CFF8c11F2d3ebf8C6d796Ed60020Fc66286',  // 这里的地址要小写
     'twt',
     '18',
     EXTRACT(EPOCH FROM NOW())::integer
